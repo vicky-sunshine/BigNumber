@@ -1,10 +1,8 @@
 #include <iostream>
-#include <cstdint>
 #include <string>
 #include <vector>
-#include <sstream>
 
-//Big number class definition. This is just an example.
+// Big number class definition
 class BigNumber{
 private:
     bool sgn;
@@ -17,14 +15,18 @@ public:
     BigNumber(std::string&);
     BigNumber(bool, std::vector<uint8_t>&);
     
+    //overloaded arithmetic operators as member functions
     friend const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs);
     friend const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs);
     friend const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs);
     friend const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs);
     friend const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs);
+    
+    // ouput format for BigNumber
     friend std::ostream& operator<<(std::ostream& os, const BigNumber& rhs);
 };
 
+// constructor
 BigNumber::BigNumber(int number){
     int unsign_number;
     
@@ -33,12 +35,6 @@ BigNumber::BigNumber(int number){
     
     // make number positive
     unsign_number = (number<0)? -number:number;
-    
-    // turn these integer to hex string
-    std::string hex_string;
-    std::stringstream temp;
-    temp << std::hex <<number;
-    temp >> hex_string;
     
     // turn this integer to hex and store it to data
     while (unsign_number>=16){
@@ -63,9 +59,9 @@ std::ostream& operator<<(std::ostream& os, const BigNumber& rhs){
         // i is a pointer, point to a certain position in the vector (rhs.data)
         // *i is the value store in THAT position
         if (*i > 10){
-            os << static_cast<char>(*i + 87);
+            os << static_cast<char>(*i + 87); // 10 -> 'a'
         }else{
-            os << static_cast<char>(*i + 48);
+            os << static_cast<char>(*i + 48); // 1 -> '1'
         }
     }
     
