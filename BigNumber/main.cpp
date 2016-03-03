@@ -1,15 +1,28 @@
-//
-//  main.cpp
-//  BigNumber
-//
-//  Created by Hsnl on 2016/3/3.
-//  Copyright © 2016年 Hsnl. All rights reserved.
-//
-
 #include <iostream>
+#include <sys/types.h>
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
-    return 0;
-}
+//Big number class definition. This is just an example.
+class BigNumber{
+ private:
+    bool sgn;
+    unsigned int num_of_bits;
+    uint8_t *data;
+
+ public:
+    //constructors
+    BigNumber();
+    BigNumber(int); //directly convert from an int
+    BigNumber(bool, unsigned int, uint8_t*);
+
+    //overloaded arithmetic operators as member functions
+    BigNumber operator+(BigNumber);
+    BigNumber operator-(BigNumber);
+    BigNumber operator*(BigNumber);
+    BigNumber operator/(BigNumber);
+    BigNumber operator%(BigNumber);
+    //integer division: 3/2==1
+
+    //interface functions
+    void Print();
+    void GetData(bool& ,unsigned int& , uint8_t*);
+};
