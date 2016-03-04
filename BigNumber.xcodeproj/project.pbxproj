@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F45C3B4A1C880D6800A8F1C8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F45C3B491C880D6800A8F1C8 /* main.cpp */; };
+		F46DBEFA1C8A05B200F15FC7 /* gtest_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F46DBEF91C8A05B200F15FC7 /* gtest_main.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,9 @@
 		F45C3B461C880D6800A8F1C8 /* BigNumber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BigNumber; sourceTree = BUILT_PRODUCTS_DIR; };
 		F45C3B491C880D6800A8F1C8 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		F45C3B741C89E22F00A8F1C8 /* BigNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BigNumber.h; sourceTree = "<group>"; };
+		F46DBEF61C8A05AA00F15FC7 /* BigNumber.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = BigNumber.xcodeproj; sourceTree = "<group>"; };
+		F46DBEF91C8A05B200F15FC7 /* gtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = gtest_main.a; path = googletest/make/gtest_main.a; sourceTree = "<group>"; };
+		F46DBF5B1C8A0F1600F15FC7 /* BigNumber_spec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigNumber_spec.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F46DBEFA1C8A05B200F15FC7 /* gtest_main.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,6 +47,8 @@
 		F45C3B3D1C880D6800A8F1C8 = {
 			isa = PBXGroup;
 			children = (
+				F46DBEF91C8A05B200F15FC7 /* gtest_main.a */,
+				F46DBEF61C8A05AA00F15FC7 /* BigNumber.xcodeproj */,
 				F45C3B481C880D6800A8F1C8 /* BigNumber */,
 				F45C3B471C880D6800A8F1C8 /* Products */,
 			);
@@ -60,8 +67,14 @@
 			children = (
 				F45C3B491C880D6800A8F1C8 /* main.cpp */,
 				F45C3B741C89E22F00A8F1C8 /* BigNumber.h */,
+				F46DBF5B1C8A0F1600F15FC7 /* BigNumber_spec.h */,
 			);
 			path = BigNumber;
+			sourceTree = "<group>";
+		};
+		F46DBEF71C8A05AA00F15FC7 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -108,6 +121,12 @@
 			mainGroup = F45C3B3D1C880D6800A8F1C8;
 			productRefGroup = F45C3B471C880D6800A8F1C8 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F46DBEF71C8A05AA00F15FC7 /* Products */;
+					ProjectRef = F46DBEF61C8A05AA00F15FC7 /* BigNumber.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				F45C3B451C880D6800A8F1C8 /* BigNumber */,
@@ -209,9 +228,9 @@
 		F45C3B4E1C880D6800A8F1C8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
-				HEADER_SEARCH_PATHS = "";
-				LIBRARY_SEARCH_PATHS = "";
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/googletest/include";
+				LIBRARY_SEARCH_PATHS = "${PROJECT_DIR}/googletest/make";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -219,9 +238,9 @@
 		F45C3B4F1C880D6800A8F1C8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
-				HEADER_SEARCH_PATHS = "";
-				LIBRARY_SEARCH_PATHS = "";
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				HEADER_SEARCH_PATHS = "${PROJECT_DIR}/googletest/include";
+				LIBRARY_SEARCH_PATHS = "${PROJECT_DIR}/googletest/make";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -13,9 +13,13 @@
 #include <string>
 #include <vector>
 
-const int BIGGER = 1;
-const int SMALLER = -1;
-const int EQUAL = 0;
+//const int BIGGER = 1;
+//const int SMALLER = -1;
+//const int EQUAL = 0;
+
+#define BIGGER 1
+#define SMALLER -1
+#define EQUAL 0
 
 // Big number class definition
 class BigNumber{
