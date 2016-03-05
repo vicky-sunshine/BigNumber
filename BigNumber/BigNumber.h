@@ -5,10 +5,6 @@
 #include <string>
 #include <vector>
 
-//const int BIGGER = 1;
-//const int SMALLER = -1;
-//const int EQUAL = 0;
-
 #define BIGGER 1
 #define SMALLER -1
 #define EQUAL 0
@@ -57,7 +53,7 @@ BigNumber::BigNumber(int input_number) {
   unsign_number = (input_number < 0)? -input_number:input_number;
 
   // turn this integer to hex and store it to data
-  while (unsign_number >= 16){
+  while (unsign_number >= 16) {
     data.push_back(unsign_number & 15); // mod 16
     unsign_number = unsign_number >> 4; // div 16
   }
@@ -93,7 +89,7 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
 
   min_size = (lhs.data.size() < rhs.data.size())? lhs.data.size():rhs.data.size();
 
-  if (lhs.sgn == rhs.sgn){
+  if (lhs.sgn == rhs.sgn) {
     // same sign
     sgn = lhs.sgn;
     carry = 0;
@@ -103,22 +99,22 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
     }
 
     if (lhs.data.size() > rhs.data.size()) {
-      for (unsigned long i = min_size; i < lhs.data.size(); i++){
+      for (unsigned long i = min_size; i < lhs.data.size(); i++) {
         abs_result.push_back(lhs.data[i]);
       }
     } else {
-      for (unsigned long i = min_size; i < rhs.data.size(); i++){
+      for (unsigned long i = min_size; i < rhs.data.size(); i++) {
         abs_result.push_back(rhs.data[i]);
       }
     }
 
     carry = 0;
-    for (unsigned long i = 0; i < abs_result.size(); i++){
+    for (unsigned long i = 0; i < abs_result.size(); i++) {
       sum = abs_result[i] + carry;
       abs_result[i] = sum & 15;
       carry = sum >> 4;
     }
-    if (carry > 0){
+    if (carry > 0) {
       abs_result.push_back(carry);
     }
   } else {
@@ -150,44 +146,34 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
   }
 
   if (lhs.sgn != rhs.sgn) {
-    return lhs + BigNumber(!rhs.sgn, rhs.data);
+    return lhs + BigNumber(~rhs.sgn, rhs.data);
   } else {
     if (BigNumber::abs_compare(lhs, rhs) == EQUAL) {
       return BigNumber(0);
     } else if (BigNumber::abs_compare(lhs, rhs) == BIGGER) {
-      sgn = lhs.sgn;
+      sgn= true;
       min_size = rhs.data.size();
-      
+
       for (int i = 0; i < min_size; i++) {
         sub = lhs.data[i] - rhs.data[i];
         abs_result.push_back(sub);
       }
-      
-      
-      for (unsigned long i = min_size; i < lhs.data.size(); i++){
+
+
+      for (unsigned long i = min_size; i < lhs.data.size(); i++) {
         abs_result.push_back(lhs.data[i]);
       }
-      
-      
+
+
       carry = 0;
       for (unsigned long i = 0; i < abs_result.size(); i++) {
         sub = abs_result[i] - carry;
-        if (sub < 0) {
-          abs_result[i] = sub + 16;
-          carry = 1;
-        } else {
-          abs_result[i] = sub;
-          carry = 0;
-          
-        }
-        
-      }
-      if (carry == 1) {
-        abs_result.push_back(1);
+        abs_result[i] = sub & 15;
+        sub = sub >> 4;
       }
 
     } else {
-      sgn = !rhs.sgn;
+      sgn = false;
       min_size = lhs.data.size();
 
       for (int i = 0; i < min_size; i++) {
@@ -196,23 +182,20 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
       }
 
 
-      for (unsigned long i = min_size; i < rhs.data.size(); i++){
+      for (unsigned long i = min_size; i < rhs.data.size(); i++) {
         abs_result.push_back(rhs.data[i]);
       }
 
-
       carry = 0;
       for (unsigned long i = 0; i < abs_result.size(); i++) {
-        sub = abs_result[i] - carry;
+        sub = abs_result[i] + carry;
         if (sub < 0) {
           abs_result[i] = sub + 16;
           carry = 1;
         } else {
           abs_result[i] = sub;
           carry = 0;
-
         }
-
       }
       if (carry == 1) {
         abs_result.push_back(1);
@@ -264,7 +247,7 @@ int BigNumber::abs_compare(const BigNumber& lhs, const BigNumber& rhs) {
 
   // same size
   for (auto i = lhs.data.begin(), j = rhs.data.begin(), end = lhs.data.end(); i != end; ++i, ++j) {
-    if(*i > *j){
+    if(*i > *j) {
       return BIGGER;
     } else if (*i < *j) {
       return SMALLER;
