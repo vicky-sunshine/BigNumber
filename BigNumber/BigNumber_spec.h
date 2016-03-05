@@ -140,9 +140,16 @@ TEST(LogicalOperation, Smaller){
 }
 
 TEST(ArithmeticOperation, Add){
+  EXPECT_EQ(BigNumber(0)+BigNumber(0), 0);
   EXPECT_EQ(BigNumber(1)+BigNumber(1), 2);
   EXPECT_EQ(BigNumber(15)+BigNumber(15), 30);
   EXPECT_EQ(BigNumber(10000)+BigNumber(500), 10500);
   EXPECT_EQ(BigNumber(32727)+BigNumber(32727), 65454);
+  EXPECT_EQ(BigNumber(-1)+BigNumber(-1), -2);
+  EXPECT_EQ(BigNumber(-15)+BigNumber(-15), -30);
+  EXPECT_EQ(BigNumber(-10000)+BigNumber(-500), -10500);
+  EXPECT_EQ(BigNumber(-32727)+BigNumber(-32727), -65454);
+
 
 }
+
