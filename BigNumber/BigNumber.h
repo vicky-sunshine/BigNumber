@@ -1,11 +1,3 @@
-//
-//  BigNumber.h
-//  BigNumber
-//
-//  Created by Hsnl on 2016/3/4.
-//  Copyright © 2016年 Hsnl. All rights reserved.
-//
-
 #ifndef BigNumber_h
 #define BigNumber_h
 
@@ -52,12 +44,11 @@ public:
   
   // ouput format for BigNumber
   friend std::ostream& operator<<(std::ostream&, const BigNumber&);
-  
 };
 
 // constructor
 BigNumber::BigNumber(int input_number) {
-  int unsign_number;
+  long long unsign_number;
   
   // determin its positive(true) or negative(false)
   sgn = (input_number < 0)? false : true;
@@ -73,7 +64,6 @@ BigNumber::BigNumber(int input_number) {
   data.push_back(unsign_number);
 }
 BigNumber::BigNumber(std::string& input_string) {
-  
   auto first = input_string.begin();
   if (*first == '-') {
     sgn = false;
@@ -101,13 +91,43 @@ BigNumber::BigNumber(bool input_sgn, std::vector<uint8_t>& input_data) {
 // arithmetic operators
 const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
   bool sgn;
+  unsigned long min_size;
+  uint8_t carry, sum;
+  std::vector<uint8_t> abs_result;
+  
+  min_size = (lhs.data.size() < rhs.data.size())? lhs.data.size():rhs.data.size();
+  
   if (lhs.sgn == rhs.sgn){
+    // same sign
     sgn = lhs.sgn;
-  } else {
+    carry = 0;
+    for (int i = 0; i < min_size; i++) {
+      sum = lhs.data[i] + rhs.data[i];
+      abs_result.push_back(sum);
+    }
     
+    if (lhs.data.size() > rhs.data.size()) {
+      for (unsigned long i = min_size; i < lhs.data.size(); i++){
+        abs_result.push_back(lhs.data[i]);
+      }
+    } else {
+      for (unsigned long i = min_size; i < rhs.data.size(); i++){
+        abs_result.push_back(rhs.data[i]);
+      }
+    }
+    
+    carry = 0;
+    for (unsigned long i = 0; i < abs_result.size(); i++){
+      sum = abs_result[i] + carry;
+      abs_result[i] = sum & 15;
+      carry = sum >> 4;
+    }
+    if (carry >0){
+      abs_result.push_back(carry);
+    }
   }
   
-  return BigNumber(-1);
+  return BigNumber(sgn, abs_result);
 }
 const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs);
 const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs);
