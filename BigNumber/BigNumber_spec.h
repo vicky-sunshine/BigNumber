@@ -45,8 +45,8 @@ TEST(ObjectInitTest, InitByString){
 
 TEST(ObjectInitTest, InitByVector){
   std::stringstream output;
-  std::vector<uint8_t> abs{ 15, 1 }; // "1f"
-  std::vector<uint8_t> z{ 0 }; // "1f"
+  std::vector<int8_t> abs{ 15, 1 }; // "1f"
+  std::vector<int8_t> z{ 0 }; // "1f"
 
   BigNumber positive(true, abs);
   output << positive;
@@ -141,15 +141,61 @@ TEST(LogicalOperation, Smaller){
 
 TEST(ArithmeticOperation, Add){
   EXPECT_EQ(BigNumber(0)+BigNumber(0), 0);
+  EXPECT_EQ(BigNumber(0)+BigNumber(1), 1);
+  EXPECT_EQ(BigNumber(1)+BigNumber(0), 1);
   EXPECT_EQ(BigNumber(1)+BigNumber(1), 2);
   EXPECT_EQ(BigNumber(15)+BigNumber(15), 30);
   EXPECT_EQ(BigNumber(10000)+BigNumber(500), 10500);
+  EXPECT_EQ(BigNumber(500)+BigNumber(10000), 10500);
   EXPECT_EQ(BigNumber(32727)+BigNumber(32727), 65454);
+
+
+  EXPECT_EQ(BigNumber(0)+BigNumber(-1), -1);
+  EXPECT_EQ(BigNumber(-1)+BigNumber(0), -1);
   EXPECT_EQ(BigNumber(-1)+BigNumber(-1), -2);
   EXPECT_EQ(BigNumber(-15)+BigNumber(-15), -30);
   EXPECT_EQ(BigNumber(-10000)+BigNumber(-500), -10500);
+  EXPECT_EQ(BigNumber(-500)+BigNumber(-10500), -11000);
   EXPECT_EQ(BigNumber(-32727)+BigNumber(-32727), -65454);
 
-
+  EXPECT_EQ(BigNumber(1)+BigNumber(-1), 0);
+  EXPECT_EQ(BigNumber(15)+BigNumber(-15), 0);
+  EXPECT_EQ(BigNumber(-400)+BigNumber(5), -395);
+  EXPECT_EQ(BigNumber(0)+BigNumber(-1), -1);
+  EXPECT_EQ(BigNumber(32727)+BigNumber(-32727), 0);
+  EXPECT_EQ(BigNumber(-1)+BigNumber(1), 0);
+  EXPECT_EQ(BigNumber(-15)+BigNumber(15), 0);
+  EXPECT_EQ(BigNumber(400)+BigNumber(-5), 395);
+  EXPECT_EQ(BigNumber(-32727)+BigNumber(32727), 0);
 }
 
+TEST(ArithmeticOperation, Sub){
+  EXPECT_EQ(BigNumber(0)-BigNumber(0), 0);
+  EXPECT_EQ(BigNumber(0)-BigNumber(1), -1);
+  EXPECT_EQ(BigNumber(1)-BigNumber(0), 1);
+  EXPECT_EQ(BigNumber(1)-BigNumber(1), 0);
+  EXPECT_EQ(BigNumber(15)-BigNumber(15), 0);
+  EXPECT_EQ(BigNumber(10000)-BigNumber(500), 9500);
+  EXPECT_EQ(BigNumber(500)-BigNumber(10000), -9500);
+  EXPECT_EQ(BigNumber(32727)-BigNumber(32727), 0);
+
+
+  EXPECT_EQ(BigNumber(0)-BigNumber(-1), 1);
+  EXPECT_EQ(BigNumber(-1)-BigNumber(0), -1);
+  EXPECT_EQ(BigNumber(-1)-BigNumber(-1), 0);
+  EXPECT_EQ(BigNumber(-15)-BigNumber(-15), 0);
+  EXPECT_EQ(BigNumber(-10000)-BigNumber(-500), -9500);
+  EXPECT_EQ(BigNumber(-500)-BigNumber(-10500), 10000);
+  EXPECT_EQ(BigNumber(-32727)-BigNumber(-32727), 0);
+
+  EXPECT_EQ(BigNumber(1)-BigNumber(-1), 2);
+  EXPECT_EQ(BigNumber(15)-BigNumber(-15), 30);
+  EXPECT_EQ(BigNumber(-400)-BigNumber(5), -405);
+  EXPECT_EQ(BigNumber(0)-BigNumber(-1), 1);
+  EXPECT_EQ(BigNumber(32727)-BigNumber(-32727), 65454);
+  EXPECT_EQ(BigNumber(-1)-BigNumber(1), -2);
+  EXPECT_EQ(BigNumber(-15)-BigNumber(15), -30);
+  EXPECT_EQ(BigNumber(400)-BigNumber(-5), 405);
+  EXPECT_EQ(BigNumber(-32727)-BigNumber(32727), -65454);
+
+}
