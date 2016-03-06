@@ -17,20 +17,20 @@ private:
   static int abs_compare(const BigNumber&, const BigNumber&);
 
 public:
-  //constructors
+  // constructors
   BigNumber();
-  BigNumber(long long); //directly convert from an int
+  BigNumber(long long); // directly convert from an int
   BigNumber(const std::string&);
   BigNumber(bool, const std::vector<int8_t>&);
 
-  //overloaded arithmetic operators as member functions
+  // overloaded arithmetic operators as member functions
   friend const BigNumber operator+(const BigNumber&, const BigNumber&);
   friend const BigNumber operator-(const BigNumber&, const BigNumber&);
   friend const BigNumber operator*(const BigNumber&, const BigNumber&);
   friend const BigNumber operator/(const BigNumber&, const BigNumber&);
   friend const BigNumber operator%(const BigNumber&, const BigNumber&);
 
-  //overloaded logical operators as member functions
+  // overloaded logical operators as member functions
   friend bool operator==(const BigNumber&, const BigNumber&);
   friend bool operator!=(const BigNumber&, const BigNumber&);
   friend bool operator>(const BigNumber&, const BigNumber&);
@@ -59,6 +59,7 @@ BigNumber::BigNumber(long long input_number) {
   }
   data.push_back(unsign_number);
 }
+
 BigNumber::BigNumber(const std::string& input_string) {
   auto first = input_string.begin();
 
@@ -70,7 +71,6 @@ BigNumber::BigNumber(const std::string& input_string) {
     } else if (*i >= 'A' && *i <= 'F') {
       data.push_back(*i - 'A' + 10);
     } else if (*i >= 'a' && *i <= 'f') {
-      // a ~ f
       data.push_back(*i - 'a' + 10);
     }
   }

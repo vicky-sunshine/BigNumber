@@ -3,11 +3,11 @@
 #include <iostream>
 #include <ctime>
 
-#define RND_CASE 100000
+#define RND_CASE 10000
 #define RND_MAX 536870912 // pow(2, 29)
 #define RND_MIN -536870912
 
-//Test Constructor
+// Test Constructor
 TEST(ObjectInitTest, InitByInteger) {
   std::stringstream output;
 
@@ -65,7 +65,7 @@ TEST(ObjectInitTest, InitByVector) {
   EXPECT_EQ(output.str(), "0");
 }
 
-//Test logical operation
+// Test logical operation
 TEST(LogicalOperation, EqualRandom) {
   int num;
   srand((int)time(0));
@@ -101,6 +101,8 @@ TEST(ArithmeticOperation, Add) {
             +BigNumber("ffa24387539639853800bbecbcb494990"),
             BigNumber("1011e7eeba95956de6b9893d63332b1637e"));
 }
+
+// Test arithmetic operation
 TEST(ArithmeticOperation, AddRandom) {
   int lhs, rhs;
 
