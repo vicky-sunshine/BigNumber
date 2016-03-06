@@ -19,7 +19,7 @@ private:
 public:
   //constructors
   BigNumber();
-  BigNumber(int); //directly convert from an int
+  BigNumber(long long); //directly convert from an int
   BigNumber(const std::string&);
   BigNumber(bool, const std::vector<int8_t>&);
 
@@ -43,7 +43,7 @@ public:
 };
 
 // constructor
-BigNumber::BigNumber(int input_number) {
+BigNumber::BigNumber(long long input_number) {
   long long unsign_number;
 
   // determin its positive(true) or negative(false)
@@ -130,9 +130,10 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
 const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
   bool sgn;
   unsigned long min_size;
-  int8_t sub, carry;
+  int8_t sub, borrow;
   std::vector<int8_t> abs_result;
 
+  // zero case
   if (lhs == BigNumber(0) && rhs == BigNumber(0)) {
     return BigNumber(0);
   }
@@ -146,67 +147,64 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
   }
 
   if (lhs.sgn != rhs.sgn) {
+    // equal to do ADD operation
     return lhs + BigNumber(!rhs.sgn, rhs.data);
   } else {
     if (BigNumber::abs_compare(lhs, rhs) == EQUAL) {
       return BigNumber(0);
     } else if (BigNumber::abs_compare(lhs, rhs) == BIGGER) {
       sgn = lhs.sgn;
-      min_size = rhs.data.size();
 
+      // sub all first
+      min_size = rhs.data.size();
       for (int i = 0; i < min_size; i++) {
         sub = lhs.data[i] - rhs.data[i];
         abs_result.push_back(sub);
       }
 
-
+      // insert remain digit
       for (unsigned long i = min_size; i < lhs.data.size(); i++) {
         abs_result.push_back(lhs.data[i]);
       }
 
-      carry = 0;
-      for (unsigned long i = 0; i < abs_result.size(); i++) {
-        sub = abs_result[i] - carry;
-        if (sub < 0) {
-          abs_result[i] = sub + 16;
-          carry = 1;
-        } else {
-          abs_result[i] = sub;
-          carry = 0;
-        }
-      }
-      if (carry == 1) {
-        abs_result.push_back(1);
-      }
     } else {
       sgn = !rhs.sgn;
-      min_size = lhs.data.size();
 
+      // sub all first
+      min_size = lhs.data.size();
       for (int i = 0; i < min_size; i++) {
         sub = rhs.data[i] - lhs.data[i];
         abs_result.push_back(sub);
       }
 
+      // insert remain digit
       for (unsigned long i = min_size; i < rhs.data.size(); i++) {
         abs_result.push_back(rhs.data[i]);
       }
+    }
 
-      carry = 0;
-      for (unsigned long i = 0; i < abs_result.size(); i++) {
-        sub = abs_result[i] - carry;
-        if (sub < 0) {
-          abs_result[i] = sub + 16;
-          carry = 1;
-        } else {
-          abs_result[i] = sub;
-          carry = 0;
-        }
-      }
-      if (carry == 1) {
-        abs_result.push_back(1);
+    // handle borrow
+    borrow = 0;
+    for (unsigned long i = 0; i < abs_result.size(); i++) {
+      sub = abs_result[i] - borrow;
+      if (sub < 0) {
+        abs_result[i] = sub + 16;
+        borrow = 1;
+      } else {
+        abs_result[i] = sub;
+        borrow = 0;
       }
     }
+    if (borrow == 1) {
+      abs_result.push_back(1);
+    }
+
+    //discard redundant zero
+    while (*abs_result.rbegin() == 0) {
+      abs_result.pop_back();
+    }
   }
+
   return BigNumber(sgn, abs_result);
 }
 const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs);
@@ -231,7 +229,7 @@ bool operator>(const BigNumber& lhs, const BigNumber& rhs) {
   }
 }
 bool operator<(const BigNumber& lhs, const BigNumber& rhs) {
-  return !(lhs == rhs) && !(lhs > rhs);
+  return rhs > lhs;
 }
 bool operator>=(const BigNumber& lhs, const BigNumber& rhs) {
   return !(lhs < rhs);
@@ -249,7 +247,7 @@ int BigNumber::abs_compare(const BigNumber& lhs, const BigNumber& rhs) {
   }
 
   // same size
-  for (auto i = lhs.data.begin(), j = rhs.data.begin(), end = lhs.data.end(); i != end; ++i, ++j) {
+  for (auto i = lhs.data.rbegin(), j = rhs.data.rbegin(), end = lhs.data.rend(); i != end; ++i, ++j) {
     if(*i > *j) {
       return BIGGER;
     } else if (*i < *j) {
