@@ -1,9 +1,14 @@
 #include "gtest/gtest.h"
 #include "BigNumber.h"
 #include <iostream>
+#include <ctime>
+
+#define RND_CASE 100000
+#define RND_MAX 536870912 // pow(2, 29)
+#define RND_MIN -536870912
 
 //Test Constructor
-TEST(ObjectInitTest, InitByInteger){
+TEST(ObjectInitTest, InitByInteger) {
   std::stringstream output;
 
   BigNumber positive(31);
@@ -20,8 +25,7 @@ TEST(ObjectInitTest, InitByInteger){
   output << zero;
   EXPECT_EQ(output.str(), "0");
 }
-
-TEST(ObjectInitTest, InitByString){
+TEST(ObjectInitTest, InitByString) {
   std::stringstream output;
   std::string p("1f");
   std::string n("-1f");
@@ -40,10 +44,8 @@ TEST(ObjectInitTest, InitByString){
   BigNumber zero(z);
   output << zero;
   EXPECT_EQ(output.str(), "0");
-
 }
-
-TEST(ObjectInitTest, InitByVector){
+TEST(ObjectInitTest, InitByVector) {
   std::stringstream output;
   std::vector<int8_t> abs{ 15, 1 }; // "1f"
   std::vector<int8_t> z{ 0 }; // "1f"
@@ -64,138 +66,64 @@ TEST(ObjectInitTest, InitByVector){
 }
 
 //Test logical operation
-TEST(LogicalOperation, EQUAL){
-  BigNumber a(31), b(31), c(0), d(-2), e(-2);
-  EXPECT_TRUE(a == b);
-  EXPECT_FALSE(a == c);
-  EXPECT_FALSE(a == d);
-  EXPECT_FALSE(a == e);
-  EXPECT_FALSE(b == c);
-  EXPECT_FALSE(b == d);
-  EXPECT_FALSE(b == e);
-  EXPECT_FALSE(c == d);
-  EXPECT_FALSE(c == e);
-  EXPECT_TRUE(d == e);
+TEST(LogicalOperation, EqualRandom) {
+  int num;
+  srand((int)time(0));
 
-  EXPECT_TRUE(b == a);
-  EXPECT_FALSE(c == a);
-  EXPECT_FALSE(d == a);
-  EXPECT_FALSE(e == a);
-  EXPECT_FALSE(c == b);
-  EXPECT_FALSE(d == b);
-  EXPECT_FALSE(e == b);
-  EXPECT_FALSE(d == c);
-  EXPECT_FALSE(e == c);
-  EXPECT_TRUE(e == d);
+  for (int i = 0; i < RND_CASE; i++) {
+    num = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    EXPECT_EQ(BigNumber(num) == BigNumber(num), num == num);
+  }
+}
+TEST(LogicalOperation, SmallerRandom) {
+  int lhs, rhs;
+  srand((int)time(0));
+
+  for (int i = 0; i < RND_CASE; i++) {
+    lhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    rhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    EXPECT_EQ(BigNumber(lhs) < BigNumber(rhs), lhs < rhs);
+  }
+}
+TEST(LogicalOperation, BiggerRandom) {
+  int lhs, rhs;
+  srand((int)time(0));
+
+  for (int i = 0; i < RND_CASE; i++) {
+    lhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    rhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    EXPECT_EQ(BigNumber(lhs) > BigNumber(rhs), lhs > rhs);
+  }
 }
 
-TEST(LogicalOperation, Bigger){
-  BigNumber a(31), b(2), c(0), d(-2), e(-64);
-  EXPECT_TRUE(a > b);
-  EXPECT_TRUE(a > c);
-  EXPECT_TRUE(a > d);
-  EXPECT_TRUE(a > e);
-  EXPECT_TRUE(b > c);
-  EXPECT_TRUE(b > d);
-  EXPECT_TRUE(b > e);
-  EXPECT_TRUE(c > d);
-  EXPECT_TRUE(c > e);
-  EXPECT_TRUE(d > e);
-
-  EXPECT_FALSE(b > a);
-  EXPECT_FALSE(c > a);
-  EXPECT_FALSE(d > a);
-  EXPECT_FALSE(e > a);
-  EXPECT_FALSE(c > b);
-  EXPECT_FALSE(d > b);
-  EXPECT_FALSE(e > b);
-  EXPECT_FALSE(d > c);
-  EXPECT_FALSE(e > c);
-  EXPECT_FALSE(e > d);
+TEST(ArithmeticOperation, Add) {
+  EXPECT_EQ(BigNumber("f1245ab3341ff3461818881767676819ee")
+            +BigNumber("ffa24387539639853800bbecbcb494990"),
+            BigNumber("1011e7eeba95956de6b9893d63332b1637e"));
 }
+TEST(ArithmeticOperation, AddRandom) {
+  int lhs, rhs;
 
-TEST(LogicalOperation, Smaller){
-  BigNumber a(31), b(2), c(0), d(-2), e(-64);
-  EXPECT_FALSE(a < b);
-  EXPECT_FALSE(a < c);
-  EXPECT_FALSE(a < d);
-  EXPECT_FALSE(a < e);
-  EXPECT_FALSE(b < c);
-  EXPECT_FALSE(b < d);
-  EXPECT_FALSE(b < e);
-  EXPECT_FALSE(c < d);
-  EXPECT_FALSE(c < e);
-  EXPECT_FALSE(d < e);
-
-  EXPECT_TRUE(b < a);
-  EXPECT_TRUE(c < a);
-  EXPECT_TRUE(d < a);
-  EXPECT_TRUE(e < a);
-  EXPECT_TRUE(c < b);
-  EXPECT_TRUE(d < b);
-  EXPECT_TRUE(e < b);
-  EXPECT_TRUE(d < c);
-  EXPECT_TRUE(e < c);
-  EXPECT_TRUE(e < d);
+  srand((int)time(0));
+  for (int i = 0; i < RND_CASE; i++) {
+    lhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    rhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    //std::cout << lhs << '+'<< rhs << std::endl;
+    EXPECT_EQ(BigNumber(lhs)+BigNumber(rhs), lhs + rhs) << lhs << " + " << rhs;
+  }
 }
-
-TEST(ArithmeticOperation, Add){
-  EXPECT_EQ(BigNumber(0)+BigNumber(0), 0);
-  EXPECT_EQ(BigNumber(0)+BigNumber(1), 1);
-  EXPECT_EQ(BigNumber(1)+BigNumber(0), 1);
-  EXPECT_EQ(BigNumber(1)+BigNumber(1), 2);
-  EXPECT_EQ(BigNumber(15)+BigNumber(15), 30);
-  EXPECT_EQ(BigNumber(10000)+BigNumber(500), 10500);
-  EXPECT_EQ(BigNumber(500)+BigNumber(10000), 10500);
-  EXPECT_EQ(BigNumber(32727)+BigNumber(32727), 65454);
-
-
-  EXPECT_EQ(BigNumber(0)+BigNumber(-1), -1);
-  EXPECT_EQ(BigNumber(-1)+BigNumber(0), -1);
-  EXPECT_EQ(BigNumber(-1)+BigNumber(-1), -2);
-  EXPECT_EQ(BigNumber(-15)+BigNumber(-15), -30);
-  EXPECT_EQ(BigNumber(-10000)+BigNumber(-500), -10500);
-  EXPECT_EQ(BigNumber(-500)+BigNumber(-10500), -11000);
-  EXPECT_EQ(BigNumber(-32727)+BigNumber(-32727), -65454);
-
-  EXPECT_EQ(BigNumber(1)+BigNumber(-1), 0);
-  EXPECT_EQ(BigNumber(15)+BigNumber(-15), 0);
-  EXPECT_EQ(BigNumber(-400)+BigNumber(5), -395);
-  EXPECT_EQ(BigNumber(0)+BigNumber(-1), -1);
-  EXPECT_EQ(BigNumber(32727)+BigNumber(-32727), 0);
-  EXPECT_EQ(BigNumber(-1)+BigNumber(1), 0);
-  EXPECT_EQ(BigNumber(-15)+BigNumber(15), 0);
-  EXPECT_EQ(BigNumber(400)+BigNumber(-5), 395);
-  EXPECT_EQ(BigNumber(-32727)+BigNumber(32727), 0);
+TEST(ArithmeticOperation, Sub) {
+  EXPECT_EQ(BigNumber("f1245ab3341ff3461818881767676819ee")
+            -BigNumber("ffa24387539639853800bbecbcb494990"),
+            BigNumber("e12a367abee68fadc4987c589b9c1ed05e"));
 }
+TEST(ArithmeticOperation, SubRandom) {
+  int lhs, rhs;
 
-TEST(ArithmeticOperation, Sub){
-  EXPECT_EQ(BigNumber(0)-BigNumber(0), 0);
-  EXPECT_EQ(BigNumber(0)-BigNumber(1), -1);
-  EXPECT_EQ(BigNumber(1)-BigNumber(0), 1);
-  EXPECT_EQ(BigNumber(1)-BigNumber(1), 0);
-  EXPECT_EQ(BigNumber(15)-BigNumber(15), 0);
-  EXPECT_EQ(BigNumber(10000)-BigNumber(500), 9500);
-  EXPECT_EQ(BigNumber(500)-BigNumber(10000), -9500);
-  EXPECT_EQ(BigNumber(32727)-BigNumber(32727), 0);
-
-
-  EXPECT_EQ(BigNumber(0)-BigNumber(-1), 1);
-  EXPECT_EQ(BigNumber(-1)-BigNumber(0), -1);
-  EXPECT_EQ(BigNumber(-1)-BigNumber(-1), 0);
-  EXPECT_EQ(BigNumber(-15)-BigNumber(-15), 0);
-  EXPECT_EQ(BigNumber(-10000)-BigNumber(-500), -9500);
-  EXPECT_EQ(BigNumber(-500)-BigNumber(-10500), 10000);
-  EXPECT_EQ(BigNumber(-32727)-BigNumber(-32727), 0);
-
-  EXPECT_EQ(BigNumber(1)-BigNumber(-1), 2);
-  EXPECT_EQ(BigNumber(15)-BigNumber(-15), 30);
-  EXPECT_EQ(BigNumber(-400)-BigNumber(5), -405);
-  EXPECT_EQ(BigNumber(0)-BigNumber(-1), 1);
-  EXPECT_EQ(BigNumber(32727)-BigNumber(-32727), 65454);
-  EXPECT_EQ(BigNumber(-1)-BigNumber(1), -2);
-  EXPECT_EQ(BigNumber(-15)-BigNumber(15), -30);
-  EXPECT_EQ(BigNumber(400)-BigNumber(-5), 405);
-  EXPECT_EQ(BigNumber(-32727)-BigNumber(32727), -65454);
-
+  srand((int)time(0));
+  for (int i = 0; i < RND_CASE; i++) {
+    lhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    rhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    EXPECT_EQ(BigNumber(lhs)-BigNumber(rhs), lhs - rhs) << lhs << " - " << rhs;
+  }
 }
