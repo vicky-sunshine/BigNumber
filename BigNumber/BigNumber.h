@@ -93,11 +93,14 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
     // same sign
     sgn = lhs.sgn;
     carry = 0;
+
+    // add all first
     for (int i = 0; i < min_size; i++) {
       sum = lhs.data[i] + rhs.data[i];
       abs_result.push_back(sum);
     }
 
+    // insert remain digit
     if (lhs.data.size() > rhs.data.size()) {
       for (unsigned long i = min_size; i < lhs.data.size(); i++) {
         abs_result.push_back(lhs.data[i]);
@@ -108,6 +111,7 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
       }
     }
 
+    // handle carry
     carry = 0;
     for (unsigned long i = 0; i < abs_result.size(); i++) {
       sum = abs_result[i] + carry;
