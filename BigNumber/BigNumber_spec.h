@@ -3,9 +3,9 @@
 #include <iostream>
 #include <ctime>
 
-#define RND_CASE 10000
-#define RND_MAX 536870912 // pow(2, 29)
-#define RND_MIN -536870912
+#define RND_CASE 100
+#define RND_MAX 32768 // pow(2, 29)
+#define RND_MIN -32768
 
 // Test Constructor
 TEST(ObjectInitTest, InitByInteger) {
@@ -129,3 +129,19 @@ TEST(ArithmeticOperation, SubRandom) {
     EXPECT_EQ(BigNumber(lhs)-BigNumber(rhs), lhs - rhs) << lhs << " - " << rhs;
   }
 }
+TEST(ArithmeticOperation, Mul) {
+  EXPECT_EQ(BigNumber("f1245ab3341ff3461818881767676819ee")
+            *BigNumber("ffa24387539639853800bbecbcb494990"),
+            BigNumber("f0cc0ef5e2f7d593719ce283c6efb373d86a14d50f9f5c5 ba42a6bae39ff8d173e0"));
+}
+TEST(ArithmeticOperation, MulRandom) {
+  int lhs, rhs;
+  
+  srand((int)time(0));
+  for (int i = 0; i < RND_CASE; i++) {
+    lhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    rhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    EXPECT_EQ(BigNumber(lhs)*BigNumber(rhs), lhs * rhs) << lhs << " * " << rhs;
+  }
+}
+
