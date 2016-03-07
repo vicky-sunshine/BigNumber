@@ -95,7 +95,7 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
     carry = 0;
 
     // add all first
-    for (int i = 0; i < min_size; i++) {
+    for (unsigned long i = 0; i < min_size; i++) {
       sum = lhs.data[i] + rhs.data[i];
       abs_result.push_back(sum);
     }
@@ -161,7 +161,7 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
 
       // sub all first
       min_size = rhs.data.size();
-      for (int i = 0; i < min_size; i++) {
+      for (unsigned long i = 0; i < min_size; i++) {
         sub = lhs.data[i] - rhs.data[i];
         abs_result.push_back(sub);
       }
@@ -176,7 +176,7 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
 
       // sub all first
       min_size = lhs.data.size();
-      for (int i = 0; i < min_size; i++) {
+      for (unsigned long i = 0; i < min_size; i++) {
         sub = rhs.data[i] - lhs.data[i];
         abs_result.push_back(sub);
       }
@@ -211,7 +211,31 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
 
   return BigNumber(sgn, abs_result);
 }
-const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs);
+const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs) {
+  bool sgn;
+  std::vector<int8_t> result;
+
+  if(lhs == 0 || rhs == 0){
+    return BigNumber(0);
+  }
+
+  sgn = (lhs.sgn == rhs.sgn);
+
+  result.resize(lhs.data.size() + rhs.data.size(), 0);
+  int16_t sum = 0;
+  for(unsigned long i = 0; i < lhs.data.size(); i++){
+    for(unsigned long j = 0; j < rhs.data.size(); j++){
+      sum = result[i + j] + lhs.data[i] * rhs.data[j];
+      result[i + j] = sum % 16; // sum
+      result[i + j + 1] += sum / 16; // carry
+    }
+  }
+  // discard leading zero
+  while(result.back() == 0){
+    result.pop_back();
+  }
+  return BigNumber(sgn, result);
+}
 const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs);
 const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs);
 
