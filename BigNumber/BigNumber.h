@@ -23,13 +23,6 @@ public:
   BigNumber(const std::string&);
   BigNumber(bool, const std::vector<int8_t>&);
 
-  // overloaded arithmetic operators as member functions
-  friend const BigNumber operator+(const BigNumber&, const BigNumber&);
-  friend const BigNumber operator-(const BigNumber&, const BigNumber&);
-  friend const BigNumber operator*(const BigNumber&, const BigNumber&);
-  friend const BigNumber operator/(const BigNumber&, const BigNumber&);
-  friend const BigNumber operator%(const BigNumber&, const BigNumber&);
-
   // overloaded logical operators as member functions
   friend bool operator==(const BigNumber&, const BigNumber&);
   friend bool operator!=(const BigNumber&, const BigNumber&);
@@ -37,6 +30,13 @@ public:
   friend bool operator<(const BigNumber&, const BigNumber&);
   friend bool operator>=(const BigNumber&, const BigNumber&);
   friend bool operator<=(const BigNumber&, const BigNumber&);
+
+  // overloaded arithmetic operators as member functions
+  friend const BigNumber operator+(const BigNumber&, const BigNumber&);
+  friend const BigNumber operator-(const BigNumber&, const BigNumber&);
+  friend const BigNumber operator*(const BigNumber&, const BigNumber&);
+  friend const BigNumber operator/(const BigNumber&, const BigNumber&);
+  friend const BigNumber operator%(const BigNumber&, const BigNumber&);
 
   // ouput format for BigNumber
   friend std::ostream& operator<<(std::ostream&, const BigNumber&);
@@ -59,11 +59,8 @@ BigNumber::BigNumber(long long input_number) {
   }
   data.push_back(unsign_number);
 }
-
 BigNumber::BigNumber(const std::string& input_string) {
-  auto first = input_string.begin();
-
-  sgn = !(*first == '-');
+  sgn = !(*input_string.begin() == '-');
 
   for (auto i = input_string.rbegin(), end = input_string.rend(); i != end; ++i) {
     if (*i >= '0' && *i <= '9') {
@@ -80,15 +77,63 @@ BigNumber::BigNumber(bool input_sgn, const std::vector<int8_t>& input_data) {
   data.assign(input_data.begin(), input_data.end());
 }
 
+// logical operators
+bool operator==(const BigNumber& lhs, const BigNumber& rhs) {
+  return (lhs.sgn == rhs.sgn) && (BigNumber::abs_compare(lhs, rhs) == EQUAL);
+}
+bool operator!=(const BigNumber& lhs, const BigNumber& rhs) {
+  return !(lhs == rhs);
+}
+bool operator>(const BigNumber& lhs, const BigNumber& rhs) {
+  int abs_cmp;
+
+  if (lhs.sgn == rhs.sgn) {
+    abs_cmp = BigNumber::abs_compare(lhs, rhs);
+    return ((lhs.sgn && abs_cmp == BIGGER) || (!lhs.sgn && abs_cmp == SMALLER));
+  } else {
+    return lhs.sgn;
+  }
+}
+bool operator<(const BigNumber& lhs, const BigNumber& rhs) {
+  return rhs > lhs;
+}
+bool operator>=(const BigNumber& lhs, const BigNumber& rhs) {
+  return !(lhs < rhs);
+}
+bool operator<=(const BigNumber& lhs, const BigNumber& rhs) {
+  return !(lhs > rhs);
+}
+
+//output format
+int BigNumber::abs_compare(const BigNumber& lhs, const BigNumber& rhs) {
+  if (lhs.data.size() > rhs.data.size()) {
+    return BIGGER;
+  } else if (lhs.data.size() < rhs.data.size()) {
+    return SMALLER;
+  }
+
+  // same size
+  for (auto i = lhs.data.rbegin(), j = rhs.data.rbegin(), end = lhs.data.rend(); i != end; ++i, ++j) {
+    if(*i > *j) {
+      return BIGGER;
+    } else if (*i < *j) {
+      return SMALLER;
+    }
+  }
+
+  return EQUAL;
+}
+
 // arithmetic operators
 const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
   bool sgn;
+  std::vector<int8_t> abs_result;
   unsigned long min_size;
   int8_t carry, sum;
-  std::vector<int8_t> abs_result;
 
   min_size = (lhs.data.size() < rhs.data.size())? lhs.data.size():rhs.data.size();
 
+  // check is add or sub
   if (lhs.sgn == rhs.sgn) {
     // same sign
     sgn = lhs.sgn;
@@ -133,9 +178,9 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
 }
 const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
   bool sgn;
-  unsigned long min_size;
-  int8_t sub, borrow;
   std::vector<int8_t> abs_result;
+  unsigned long min_size;
+  int8_t borrow, sub;
 
   // zero case
   if (lhs == BigNumber(0) && rhs == BigNumber(0)) {
@@ -150,6 +195,7 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
     return lhs;
   }
 
+  // check is add or sub
   if (lhs.sgn != rhs.sgn) {
     // equal to do ADD operation
     return lhs + BigNumber(!rhs.sgn, rhs.data);
@@ -213,7 +259,7 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
 }
 const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs) {
   bool sgn;
-  std::vector<int8_t> result;
+  std::vector<int8_t> abs_result;
 
   if(lhs == 0 || rhs == 0){
     return BigNumber(0);
@@ -221,70 +267,24 @@ const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs) {
 
   sgn = (lhs.sgn == rhs.sgn);
 
-  result.resize(lhs.data.size() + rhs.data.size(), 0);
+  abs_result.resize(lhs.data.size() + rhs.data.size(), 0);
   int16_t sum = 0;
   for(unsigned long i = 0; i < lhs.data.size(); i++){
     for(unsigned long j = 0; j < rhs.data.size(); j++){
-      sum = result[i + j] + lhs.data[i] * rhs.data[j];
-      result[i + j] = sum % 16; // sum
-      result[i + j + 1] += sum / 16; // carry
+      sum = abs_result[i + j] + lhs.data[i] * rhs.data[j];
+      abs_result[i + j] = sum % 16; // sum
+      abs_result[i + j + 1] += sum / 16; // carry
     }
   }
   // discard leading zero
-  while(result.back() == 0){
-    result.pop_back();
+  while(abs_result.back() == 0){
+    abs_result.pop_back();
   }
-  return BigNumber(sgn, result);
+  return BigNumber(sgn, abs_result);
 }
 const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs);
 const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs);
 
-// logical operators
-bool operator==(const BigNumber& lhs, const BigNumber& rhs) {
-  return (lhs.sgn == rhs.sgn) && (BigNumber::abs_compare(lhs, rhs) == EQUAL);
-}
-bool operator!=(const BigNumber& lhs, const BigNumber& rhs) {
-  return !(lhs == rhs);
-}
-bool operator>(const BigNumber& lhs, const BigNumber& rhs) {
-  int abs_cmp;
-
-  if (lhs.sgn == rhs.sgn) {
-    abs_cmp = BigNumber::abs_compare(lhs, rhs);
-    return ((lhs.sgn && abs_cmp == BIGGER) || (!lhs.sgn && abs_cmp == SMALLER));
-  } else {
-    return lhs.sgn;
-  }
-}
-bool operator<(const BigNumber& lhs, const BigNumber& rhs) {
-  return rhs > lhs;
-}
-bool operator>=(const BigNumber& lhs, const BigNumber& rhs) {
-  return !(lhs < rhs);
-}
-bool operator<=(const BigNumber& lhs, const BigNumber& rhs) {
-  return !(lhs > rhs);
-}
-
-//output format
-int BigNumber::abs_compare(const BigNumber& lhs, const BigNumber& rhs) {
-  if (lhs.data.size() > rhs.data.size()) {
-    return BIGGER;
-  } else if (lhs.data.size() < rhs.data.size()) {
-    return SMALLER;
-  }
-
-  // same size
-  for (auto i = lhs.data.rbegin(), j = rhs.data.rbegin(), end = lhs.data.rend(); i != end; ++i, ++j) {
-    if(*i > *j) {
-      return BIGGER;
-    } else if (*i < *j) {
-      return SMALLER;
-    }
-  }
-
-  return EQUAL;
-}
 
 // output format
 std::ostream& operator<<(std::ostream& os, const BigNumber& rhs) {
