@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F45C3B4A1C880D6800A8F1C8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F45C3B491C880D6800A8F1C8 /* main.cpp */; };
 		F46DBEFA1C8A05B200F15FC7 /* gtest_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F46DBEF91C8A05B200F15FC7 /* gtest_main.a */; };
+		F4CF59FA1C91B65C0098D0F2 /* BigNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F4CF59F81C91B65C0098D0F2 /* BigNumber.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,10 +27,11 @@
 /* Begin PBXFileReference section */
 		F45C3B461C880D6800A8F1C8 /* BigNumber */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BigNumber; sourceTree = BUILT_PRODUCTS_DIR; };
 		F45C3B491C880D6800A8F1C8 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		F45C3B741C89E22F00A8F1C8 /* BigNumber.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BigNumber.h; sourceTree = "<group>"; };
 		F46DBEF61C8A05AA00F15FC7 /* BigNumber.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = BigNumber.xcodeproj; sourceTree = "<group>"; };
 		F46DBEF91C8A05B200F15FC7 /* gtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = gtest_main.a; path = googletest/make/gtest_main.a; sourceTree = "<group>"; };
 		F46DBF5B1C8A0F1600F15FC7 /* BigNumber_spec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigNumber_spec.h; sourceTree = "<group>"; };
+		F4CF59F81C91B65C0098D0F2 /* BigNumber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BigNumber.cpp; sourceTree = "<group>"; };
+		F4CF59F91C91B65C0098D0F2 /* BigNumber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigNumber.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +68,8 @@
 			isa = PBXGroup;
 			children = (
 				F45C3B491C880D6800A8F1C8 /* main.cpp */,
-				F45C3B741C89E22F00A8F1C8 /* BigNumber.h */,
+				F4CF59F81C91B65C0098D0F2 /* BigNumber.cpp */,
+				F4CF59F91C91B65C0098D0F2 /* BigNumber.hpp */,
 				F46DBF5B1C8A0F1600F15FC7 /* BigNumber_spec.h */,
 			);
 			path = BigNumber;
@@ -140,6 +143,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F45C3B4A1C880D6800A8F1C8 /* main.cpp in Sources */,
+				F4CF59FA1C91B65C0098D0F2 /* BigNumber.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

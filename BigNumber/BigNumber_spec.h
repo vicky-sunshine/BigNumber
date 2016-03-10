@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "BigNumber.h"
+#include "BigNumber.hpp"
 #include <iostream>
 #include <ctime>
 
