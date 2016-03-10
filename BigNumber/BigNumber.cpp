@@ -2,13 +2,13 @@
 // constructor
 BigNumber::BigNumber(long long input_number) {
   long long unsign_number;
-  
+
   // determin its positive(true) or negative(false)
   sgn = !(input_number < 0);
-  
+
   // make number positive
   unsign_number = (input_number < 0)? -input_number:input_number;
-  
+
   // turn this integer to hex and store it to data
   while (unsign_number >= 16) {
     data.push_back(unsign_number & 15); // mod 16
@@ -18,7 +18,7 @@ BigNumber::BigNumber(long long input_number) {
 }
 BigNumber::BigNumber(const std::string& input_string) {
   sgn = !(*input_string.begin() == '-');
-  
+
   for (auto i = input_string.rbegin(), end = input_string.rend(); i != end; ++i) {
     if (*i >= '0' && *i <= '9') {
       data.push_back(*i-'0');
@@ -43,7 +43,7 @@ bool operator!=(const BigNumber& lhs, const BigNumber& rhs) {
 }
 bool operator>(const BigNumber& lhs, const BigNumber& rhs) {
   int abs_cmp;
-  
+
   if (lhs.sgn == rhs.sgn) {
     abs_cmp = BigNumber::abs_compare(lhs, rhs);
     return ((lhs.sgn && abs_cmp == BIGGER) || (!lhs.sgn && abs_cmp == SMALLER));
@@ -68,7 +68,7 @@ int BigNumber::abs_compare(const BigNumber& lhs, const BigNumber& rhs) {
   } else if (lhs.data.size() < rhs.data.size()) {
     return SMALLER;
   }
-  
+
   // same size
   for (auto i = lhs.data.rbegin(), j = rhs.data.rbegin(), end = lhs.data.rend(); i != end; ++i, ++j) {
     if(*i > *j) {
@@ -77,8 +77,13 @@ int BigNumber::abs_compare(const BigNumber& lhs, const BigNumber& rhs) {
       return SMALLER;
     }
   }
-  
+
   return EQUAL;
+}
+void dicard_leading_zero(std::vector<int8_t>& input) {
+  while (input.back() == 0) {
+    input.pop_back();
+  }
 }
 
 // arithmetic operators
@@ -87,21 +92,21 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
   std::vector<int8_t> abs_result;
   unsigned long min_size;
   int8_t carry, sum;
-  
+
   min_size = (lhs.data.size() < rhs.data.size())? lhs.data.size():rhs.data.size();
-  
+
   // check is add or sub
   if (lhs.sgn == rhs.sgn) {
     // same sign
     sgn = lhs.sgn;
     carry = 0;
-    
+
     // add all first
     for (unsigned long i = 0; i < min_size; i++) {
       sum = lhs.data[i] + rhs.data[i];
       abs_result.push_back(sum);
     }
-    
+
     // insert remain digit
     if (lhs.data.size() > rhs.data.size()) {
       for (unsigned long i = min_size; i < lhs.data.size(); i++) {
@@ -112,7 +117,7 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
         abs_result.push_back(rhs.data[i]);
       }
     }
-    
+
     // handle carry
     carry = 0;
     for (unsigned long i = 0; i < abs_result.size(); i++) {
@@ -130,7 +135,7 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
       return lhs - BigNumber(!rhs.sgn, rhs.data);
     }
   }
-  
+
   return BigNumber(sgn, abs_result);
 }
 const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
@@ -138,20 +143,20 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
   std::vector<int8_t> abs_result;
   unsigned long min_size;
   int8_t borrow, sub;
-  
+
   // zero case
   if (lhs == BigNumber(0) && rhs == BigNumber(0)) {
     return BigNumber(0);
   }
-  
+
   if (lhs == BigNumber(0)) {
     return BigNumber(!rhs.sgn, rhs.data);
   }
-  
+
   if (rhs == BigNumber(0)) {
     return lhs;
   }
-  
+
   // check is add or sub
   if (lhs.sgn != rhs.sgn) {
     // equal to do ADD operation
@@ -161,35 +166,35 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
       return BigNumber(0);
     } else if (BigNumber::abs_compare(lhs, rhs) == BIGGER) {
       sgn = lhs.sgn;
-      
+
       // sub all first
       min_size = rhs.data.size();
       for (unsigned long i = 0; i < min_size; i++) {
         sub = lhs.data[i] - rhs.data[i];
         abs_result.push_back(sub);
       }
-      
+
       // insert remain digit
       for (unsigned long i = min_size; i < lhs.data.size(); i++) {
         abs_result.push_back(lhs.data[i]);
       }
-      
+
     } else {
       sgn = !rhs.sgn;
-      
+
       // sub all first
       min_size = lhs.data.size();
       for (unsigned long i = 0; i < min_size; i++) {
         sub = rhs.data[i] - lhs.data[i];
         abs_result.push_back(sub);
       }
-      
+
       // insert remain digit
       for (unsigned long i = min_size; i < rhs.data.size(); i++) {
         abs_result.push_back(rhs.data[i]);
       }
     }
-    
+
     // handle borrow
     borrow = 0;
     for (unsigned long i = 0; i < abs_result.size(); i++) {
@@ -205,25 +210,23 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
     if (borrow == 1) {
       abs_result.push_back(1);
     }
-    
+
     //discard redundant zero
-    while (*abs_result.rbegin() == 0) {
-      abs_result.pop_back();
-    }
+    dicard_leading_zero(abs_result);
   }
-  
+
   return BigNumber(sgn, abs_result);
 }
 const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs) {
   bool sgn;
   std::vector<int8_t> abs_result;
-  
+
   if(lhs == 0 || rhs == 0){
     return BigNumber(0);
   }
-  
+
   sgn = (lhs.sgn == rhs.sgn);
-  
+
   abs_result.resize(lhs.data.size() + rhs.data.size(), 0);
   int16_t sum = 0;
   for(unsigned long i = 0; i < lhs.data.size(); i++){
@@ -239,7 +242,24 @@ const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs) {
   }
   return BigNumber(sgn, abs_result);
 }
-const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs);
+const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
+  // assume lhs >= rhs
+BigNumber temp(0);
+
+  if (lhs==rhs) {
+    return BigNumber(0);
+  }
+
+
+  // for (unsigned long i = 0; i < lhs.data.size(); i++) {
+  //   while(BigNumber::abs_compare(temp, rhs)) {
+  //
+  //   }
+  // }
+
+
+  return BigNumber(-1);
+}
 const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs);
 
 
@@ -248,7 +268,7 @@ std::ostream& operator<<(std::ostream& os, const BigNumber& rhs) {
   if (!rhs.sgn) {
     os << "-";
   }
-  
+
   for (auto i = rhs.data.rbegin(); i!= rhs.data.rend(); ++i ) {
     // i is a pointer, point to a certain position in the vector (rhs.data)
     // *i is the value store in THAT position
@@ -258,7 +278,6 @@ std::ostream& operator<<(std::ostream& os, const BigNumber& rhs) {
       os << static_cast<char>(*i + '0'); // 1 -> '1'
     }
   }
-  
+
   return os;
 }
-
