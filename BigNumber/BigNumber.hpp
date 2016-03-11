@@ -2,7 +2,6 @@
 #define BigNumber_hpp
 
 #include <iostream>
-#include <string>
 #include <vector>
 
 #define BIGGER 1
