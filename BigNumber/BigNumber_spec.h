@@ -159,3 +159,20 @@ TEST(ArithmeticOperation, DivRandom) {
     EXPECT_EQ(BigNumber(lhs)/BigNumber(rhs), lhs / rhs) << lhs << " / " << rhs;
   }
 }
+TEST(ArithmeticOperation, Mod) {
+  EXPECT_EQ(BigNumber("f1245ab3341ff3461818881767676819ee")
+            %BigNumber("ffa24387539639853800bbecbcb494990"),
+            BigNumber("17c3b6455c31d593397d7e9767e1cca7e"));
+  EXPECT_EQ(BigNumber(7) % BigNumber(2), 7 % 2);
+
+}
+ TEST(ArithmeticOperation, ModRandom) {
+   int lhs, rhs;
+
+   srand((int)time(0));
+   for (int i = 0; i < RND_CASE; i++) {
+     lhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+     rhs = RND_MIN + (rand() % (int)(lhs - RND_MIN + 1));
+     EXPECT_EQ(BigNumber(lhs) % BigNumber(rhs), lhs % rhs) << lhs << " % " << rhs;
+   }
+ }

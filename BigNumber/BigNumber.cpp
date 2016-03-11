@@ -243,7 +243,6 @@ const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs) {
   return BigNumber(sgn, abs_result);
 }
 const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
-  // assume lhs >= rhs
   BigNumber temp(0);
   BigNumber remainder(true, lhs.data);
   BigNumber divisor(true, rhs.data);
@@ -278,7 +277,7 @@ const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
 
   discard_leading_zero(quotient.data);
   quotient.sgn = (lhs.sgn == rhs.sgn);
-  
+
   // make -0 -> +0 or nil -> +0
   if (quotient.data.size()==0) {
     quotient.data.push_back(0);
@@ -291,7 +290,42 @@ const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
 
   return quotient;
 }
-const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs);
+const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs) {
+  BigNumber temp(0);
+  BigNumber remainder(true, lhs.data);
+  BigNumber divisor(true, rhs.data);
+  BigNumber quotient(0);
+
+  if (BigNumber::abs_compare(lhs, rhs)==EQUAL) {
+    return BigNumber(0);
+  }
+  if (BigNumber::abs_compare(lhs, rhs)==SMALLER) {
+    return lhs;
+  }
+  while (remainder >= divisor) {
+    while(temp < divisor) {
+      temp.data.insert(temp.data.begin(), remainder.data.back());
+      remainder.data.pop_back();
+    }
+    discard_leading_zero(temp.data);
+
+    int8_t count = 0;
+    while (temp >= divisor) {
+      count ++;
+      temp = temp - divisor;
+    }
+
+    quotient.data.insert(quotient.data.begin(), count);
+    while(temp.data.size()!=0) {
+      remainder.data.push_back(temp.data.front());
+      temp.data.erase(temp.data.begin());
+    }
+  }
+
+  remainder.sgn = lhs.sgn;
+
+  return remainder;
+}
 
 
 // output format
