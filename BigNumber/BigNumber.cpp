@@ -3,7 +3,7 @@
 BigNumber::BigNumber(long long input_number) {
   long long unsign_number;
 
-  // determin its positive(true) or negative(false)
+  // determine its positive(true) or negative(false)
   sgn = !(input_number < 0);
 
   // make number positive
@@ -212,7 +212,7 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
     }
 
     //discard redundant zero
-    discard_leading_zero(abs_result);
+    BigNumber::discard_leading_zero(abs_result);
   }
 
   return BigNumber(sgn, abs_result);
@@ -260,7 +260,7 @@ const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
       temp.data.insert(temp.data.begin(), remainder.data.back());
       remainder.data.pop_back();
     }
-    discard_leading_zero(temp.data);
+    BigNumber::discard_leading_zero(temp.data);
 
     int8_t count = 0;
     while (temp >= divisor) {
@@ -275,7 +275,7 @@ const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
     }
   }
 
-  discard_leading_zero(quotient.data);
+  BigNumber::discard_leading_zero(quotient.data);
   quotient.sgn = (lhs.sgn == rhs.sgn);
 
   // make -0 -> +0 or nil -> +0
@@ -307,7 +307,7 @@ const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs) {
       temp.data.insert(temp.data.begin(), remainder.data.back());
       remainder.data.pop_back();
     }
-    discard_leading_zero(temp.data);
+    BigNumber::discard_leading_zero(temp.data);
 
     int8_t count = 0;
     while (temp >= divisor) {
