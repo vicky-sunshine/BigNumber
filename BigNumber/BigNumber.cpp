@@ -80,7 +80,7 @@ int BigNumber::abs_compare(const BigNumber& lhs, const BigNumber& rhs) {
 
   return EQUAL;
 }
-void discard_leading_zero(std::vector<int8_t>& input) {
+void BigNumber::discard_leading_zero(std::vector<int8_t>& input) {
   while (input.back() == 0 && input.size()!=1) {
     input.pop_back();
   }
