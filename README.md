@@ -13,7 +13,7 @@ BigNumber a("12ab");
 BigNumber b(12345);
 // pass by sgn(bool) and data(vector<vector>)
 bool sgn = true;
-vector<int8_t> data = {0, 1, 2};
+std::vector<int8_t> data = {0, 1, 2};
 BigNumber c(sgn, data); // 210
 ```
 
