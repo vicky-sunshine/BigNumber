@@ -145,6 +145,11 @@ TEST(ArithmeticOperation, MulRandom) {
   }
 }
 TEST(ArithmeticOperation, Div) {
+  EXPECT_EQ(BigNumber("f1245ab3341ff3461818881767676819ee")
+            /BigNumber("ffa24387539639853800bbecbcb494990"),
+            BigNumber("f"));
+}
+TEST(ArithmeticOperation, DivRandom) {
   int lhs, rhs;
 
   srand((int)time(0));
