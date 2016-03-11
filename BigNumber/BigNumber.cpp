@@ -3,7 +3,7 @@
 BigNumber::BigNumber(long long input_number) {
   long long unsign_number;
 
-  // determin its positive(true) or negative(false)
+  // determine its positive(true) or negative(false)
   sgn = !(input_number < 0);
 
   // make number positive
@@ -17,11 +17,11 @@ BigNumber::BigNumber(long long input_number) {
   data.push_back(unsign_number);
 }
 BigNumber::BigNumber(const std::string& input_string) {
-  sgn = !(*input_string.begin() == '-');
+  sgn = !(input_string.front() == '-');
 
   for (auto i = input_string.rbegin(), end = input_string.rend(); i != end; ++i) {
     if (*i >= '0' && *i <= '9') {
-      data.push_back(*i-'0');
+      data.push_back(*i - '0');
     } else if (*i >= 'A' && *i <= 'F') {
       data.push_back(*i - 'A' + 10);
     } else if (*i >= 'a' && *i <= 'f') {
@@ -80,7 +80,7 @@ int BigNumber::abs_compare(const BigNumber& lhs, const BigNumber& rhs) {
 
   return EQUAL;
 }
-void discard_leading_zero(std::vector<int8_t>& input) {
+void BigNumber::discard_leading_zero(std::vector<int8_t>& input) {
   while (input.back() == 0 && input.size()!=1) {
     input.pop_back();
   }
@@ -212,7 +212,7 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
     }
 
     //discard redundant zero
-    discard_leading_zero(abs_result);
+    BigNumber::discard_leading_zero(abs_result);
   }
 
   return BigNumber(sgn, abs_result);
@@ -236,10 +236,9 @@ const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs) {
       abs_result[i + j + 1] += sum / 16; // carry
     }
   }
-  // discard leading zero
-  while(abs_result.back() == 0){
-    abs_result.pop_back();
-  }
+  //discard redundant zero
+  BigNumber::discard_leading_zero(abs_result);
+
   return BigNumber(sgn, abs_result);
 }
 const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
@@ -260,7 +259,7 @@ const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
       temp.data.insert(temp.data.begin(), remainder.data.back());
       remainder.data.pop_back();
     }
-    discard_leading_zero(temp.data);
+    BigNumber::discard_leading_zero(temp.data);
 
     int8_t count = 0;
     while (temp >= divisor) {
@@ -275,7 +274,7 @@ const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
     }
   }
 
-  discard_leading_zero(quotient.data);
+  BigNumber::discard_leading_zero(quotient.data);
   quotient.sgn = (lhs.sgn == rhs.sgn);
 
   // make -0 -> +0 or nil -> +0
@@ -307,7 +306,7 @@ const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs) {
       temp.data.insert(temp.data.begin(), remainder.data.back());
       remainder.data.pop_back();
     }
-    discard_leading_zero(temp.data);
+    BigNumber::discard_leading_zero(temp.data);
 
     int8_t count = 0;
     while (temp >= divisor) {
