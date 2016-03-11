@@ -15,7 +15,7 @@ private:
   bool sgn;
   std::vector<int8_t> data;
   static int abs_compare(const BigNumber&, const BigNumber&);
-  void dicard_leading_zero(std::vector<int8_t>&);
+  void discard_leading_zero(std::vector<int8_t>&);
 public:
   // constructors
   BigNumber();

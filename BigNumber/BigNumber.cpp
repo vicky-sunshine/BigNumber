@@ -80,8 +80,8 @@ int BigNumber::abs_compare(const BigNumber& lhs, const BigNumber& rhs) {
 
   return EQUAL;
 }
-void dicard_leading_zero(std::vector<int8_t>& input) {
-  while (input.back() == 0) {
+void discard_leading_zero(std::vector<int8_t>& input) {
+  while (input.back() == 0 && input.size()!=1) {
     input.pop_back();
   }
 }
@@ -212,7 +212,7 @@ const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
     }
 
     //discard redundant zero
-    dicard_leading_zero(abs_result);
+    discard_leading_zero(abs_result);
   }
 
   return BigNumber(sgn, abs_result);
@@ -244,21 +244,52 @@ const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs) {
 }
 const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
   // assume lhs >= rhs
-BigNumber temp(0);
+  BigNumber temp(0);
+  BigNumber remainder(true, lhs.data);
+  BigNumber divisor(true, rhs.data);
+  BigNumber quotient(0);
 
   if (lhs==rhs) {
-    return BigNumber(0);
+    return BigNumber(1);
+  }
+  if (lhs== BigNumber(!rhs.sgn, rhs.data)) {
+    return BigNumber(-1);
   }
 
+  while (remainder >= divisor) {
+    while(temp < divisor) {
+      temp.data.insert(temp.data.begin(), remainder.data.back());
+      remainder.data.pop_back();
+    }
+    discard_leading_zero(temp.data);
 
-  // for (unsigned long i = 0; i < lhs.data.size(); i++) {
-  //   while(BigNumber::abs_compare(temp, rhs)) {
-  //
-  //   }
-  // }
+    int8_t count = 0;
+    while (temp >= divisor) {
+      count ++;
+      temp = temp - divisor;
+    }
 
+    quotient.data.insert(quotient.data.begin(), count);
+    while(temp.data.size()!=0) {
+      remainder.data.push_back(temp.data.front());
+      temp.data.erase(temp.data.begin());
+    }
+  }
 
-  return BigNumber(-1);
+  discard_leading_zero(quotient.data);
+  quotient.sgn = (lhs.sgn == rhs.sgn);
+  
+  // make -0 -> +0 or nil -> +0
+  if (quotient.data.size()==0) {
+    quotient.data.push_back(0);
+    quotient.sgn = true;
+  }
+  // make -0 -> +0
+  if (quotient.data.size()==1 && quotient.data.back()==0) {
+    quotient.sgn = true;
+  }
+
+  return quotient;
 }
 const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs);
 

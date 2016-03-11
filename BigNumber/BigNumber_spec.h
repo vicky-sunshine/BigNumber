@@ -3,7 +3,7 @@
 #include <iostream>
 #include <ctime>
 
-#define RND_CASE 100
+#define RND_CASE 10
 #define RND_MAX 32768 // pow(2, 29)
 #define RND_MIN -32768
 
@@ -136,7 +136,7 @@ TEST(ArithmeticOperation, Mul) {
 }
 TEST(ArithmeticOperation, MulRandom) {
   int lhs, rhs;
-  
+
   srand((int)time(0));
   for (int i = 0; i < RND_CASE; i++) {
     lhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
@@ -144,4 +144,13 @@ TEST(ArithmeticOperation, MulRandom) {
     EXPECT_EQ(BigNumber(lhs)*BigNumber(rhs), lhs * rhs) << lhs << " * " << rhs;
   }
 }
+TEST(ArithmeticOperation, Div) {
+  int lhs, rhs;
 
+  srand((int)time(0));
+  for (int i = 0; i < RND_CASE; i++) {
+    lhs = RND_MIN + (rand() % (int)(RND_MAX - RND_MIN + 1));
+    rhs = RND_MIN + (rand() % (int)(lhs - RND_MIN + 1));
+    EXPECT_EQ(BigNumber(lhs)/BigNumber(rhs), lhs / rhs) << lhs << " / " << rhs;
+  }
+}
