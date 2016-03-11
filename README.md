@@ -1,6 +1,25 @@
+## BigNumber
+This is a BigNumber Class implemented with C++.
+
+We have
+- logical operation `>`, `<`, `==`, '!=', `<=` and `>=`.
+- arithmetic `+`, `-`, `*`, `/` and `%`.
+
+#### Initialization
+```C++
+// pass by hex string
+BigNumber a("12ab");
+// pass by long lone
+BigNumber b(12345);
+// pass by sgn(bool) and data(vector<vector>)
+bool sgn = true;
+vector<int8_t> data = {0, 1, 2};
+BigNumber c(sgn, data); // 210
+```
+
 ## Unit Test with googletest
 This is a very raw note about adding unit test for C++.
-### Environment Setting
+#### Environment Setting
 Download zip from [googletest](https://github.com/google/googletest)
 and unzip the file.
 
@@ -33,7 +52,7 @@ Add library dependency:
 1. add `gtest_main.a` into Link Binary with Libraries
 
 
-### Writing Test
+#### Writing Test
 Create `BigNumber_spec.h` under `BigNumber`.
 Now the top two layer of these repo will be like below.
 ```
