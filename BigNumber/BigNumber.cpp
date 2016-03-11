@@ -304,9 +304,12 @@ const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs) {
       temp.data.erase(temp.data.begin());
     }
   }
-
+  BigNumber::discard_leading_zero(remainder.data);
   remainder.sgn = lhs.sgn;
-
+  // make -0 -> +0
+  if (remainder.data.size()==1 && remainder.data.back()==0) {
+    remainder.sgn = true;
+  }
   return remainder;
 }
 
