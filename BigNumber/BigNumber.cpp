@@ -246,42 +246,26 @@ const BigNumber operator/(const BigNumber& lhs, const BigNumber& rhs) {
   BigNumber remainder(true, lhs.data);
   BigNumber divisor(true, rhs.data);
   BigNumber quotient(0);
+  quotient.sgn = (lhs.sgn == rhs.sgn);
 
-  if (lhs==rhs) {
-    return BigNumber(1);
-  }
-  if (lhs== BigNumber(!rhs.sgn, rhs.data)) {
-    return BigNumber(-1);
-  }
-
-  while (remainder >= divisor) {
-    while(temp < divisor) {
+  int8_t count = 0;
+  while (remainder.data.size() != 0) {
+    while(temp < divisor && remainder.data.size() != 0) {
       temp.data.insert(temp.data.begin(), remainder.data.back());
       remainder.data.pop_back();
+      quotient.data.insert(quotient.data.begin(), 0);
     }
     BigNumber::discard_leading_zero(temp.data);
 
-    int8_t count = 0;
+    count = 0;
     while (temp >= divisor) {
       count ++;
       temp = temp - divisor;
     }
-
-    quotient.data.insert(quotient.data.begin(), count);
-    while(temp.data.size()!=0) {
-      remainder.data.push_back(temp.data.front());
-      temp.data.erase(temp.data.begin());
-    }
+    quotient.data.front() = count;
   }
-
   BigNumber::discard_leading_zero(quotient.data);
-  quotient.sgn = (lhs.sgn == rhs.sgn);
 
-  // make -0 -> +0 or nil -> +0
-  if (quotient.data.size()==0) {
-    quotient.data.push_back(0);
-    quotient.sgn = true;
-  }
   // make -0 -> +0
   if (quotient.data.size()==1 && quotient.data.back()==0) {
     quotient.sgn = true;
@@ -320,9 +304,12 @@ const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs) {
       temp.data.erase(temp.data.begin());
     }
   }
-
+  BigNumber::discard_leading_zero(remainder.data);
   remainder.sgn = lhs.sgn;
-
+  // make -0 -> +0
+  if (remainder.data.size()==1 && remainder.data.back()==0) {
+    remainder.sgn = true;
+  }
   return remainder;
 }
 
