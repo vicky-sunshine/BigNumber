@@ -31,7 +31,11 @@ BigNumber::BigNumber(const std::string& input_string) {
 }
 BigNumber::BigNumber(bool input_sgn, const std::vector<int8_t>& input_data) {
   sgn = input_sgn;
-  data.assign(input_data.begin(), input_data.end());
+  data = input_data;
+}
+BigNumber::BigNumber(bool input_sgn, std::vector<int8_t>&& input_data) {
+  sgn = input_sgn;
+  data = std::move(input_data);
 }
 
 // logical operators
@@ -136,86 +140,53 @@ const BigNumber operator+(const BigNumber& lhs, const BigNumber& rhs) {
     }
   }
 
-  return BigNumber(sgn, abs_result);
+  return BigNumber(sgn, std::move(abs_result));
 }
 const BigNumber operator-(const BigNumber& lhs, const BigNumber& rhs) {
   bool sgn;
   std::vector<int8_t> abs_result;
   unsigned long min_size;
-  int8_t borrow, sub;
-
-  // zero case
-  if (lhs == BigNumber(0) && rhs == BigNumber(0)) {
-    return BigNumber(0);
-  }
-
-  if (lhs == BigNumber(0)) {
-    return BigNumber(!rhs.sgn, rhs.data);
-  }
-
-  if (rhs == BigNumber(0)) {
-    return lhs;
-  }
 
   // check is add or sub
   if (lhs.sgn != rhs.sgn) {
     // equal to do ADD operation
     return lhs + BigNumber(!rhs.sgn, rhs.data);
-  } else {
+  }
+  else {
     if (BigNumber::abs_compare(lhs, rhs) == EQUAL) {
       return BigNumber(0);
-    } else if (BigNumber::abs_compare(lhs, rhs) == BIGGER) {
+    }
+    else if (BigNumber::abs_compare(lhs, rhs) == BIGGER) {
       sgn = lhs.sgn;
-
       // sub all first
       min_size = rhs.data.size();
-      for (unsigned long i = 0; i < min_size; i++) {
-        sub = lhs.data[i] - rhs.data[i];
-        abs_result.push_back(sub);
-      }
-
+      abs_result.resize(lhs.data.size());
+      std::transform(lhs.data.begin(), lhs.data.begin() + min_size, rhs.data.begin(), abs_result.begin(), std::minus<int8_t>());
       // insert remain digit
-      for (unsigned long i = min_size; i < lhs.data.size(); i++) {
-        abs_result.push_back(lhs.data[i]);
-      }
-
-    } else {
+      std::copy(lhs.data.begin() + min_size, lhs.data.end(), abs_result.begin() + min_size);
+    }
+    else {
       sgn = !rhs.sgn;
-
       // sub all first
       min_size = lhs.data.size();
-      for (unsigned long i = 0; i < min_size; i++) {
-        sub = rhs.data[i] - lhs.data[i];
-        abs_result.push_back(sub);
-      }
-
+      abs_result.resize(rhs.data.size());
+      std::transform(rhs.data.begin(), rhs.data.begin() + min_size, lhs.data.begin(), abs_result.begin(), std::minus<int8_t>());
       // insert remain digit
-      for (unsigned long i = min_size; i < rhs.data.size(); i++) {
-        abs_result.push_back(rhs.data[i]);
-      }
+      std::copy(rhs.data.begin() + min_size, rhs.data.end(), abs_result.begin() + min_size);
     }
-
     // handle borrow
-    borrow = 0;
     for (unsigned long i = 0; i < abs_result.size(); i++) {
-      sub = abs_result[i] - borrow;
-      if (sub < 0) {
-        abs_result[i] = sub + 16;
-        borrow = 1;
-      } else {
-        abs_result[i] = sub;
-        borrow = 0;
+      if (abs_result[i] < 0){
+        abs_result[i] += 16;
+        abs_result[i + 1]--;
       }
-    }
-    if (borrow == 1) {
-      abs_result.push_back(1);
     }
 
     //discard redundant zero
     BigNumber::discard_leading_zero(abs_result);
   }
 
-  return BigNumber(sgn, abs_result);
+  return BigNumber(sgn, std::move(abs_result));
 }
 const BigNumber operator*(const BigNumber& lhs, const BigNumber& rhs) {
   bool sgn;
@@ -277,7 +248,6 @@ const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs) {
   BigNumber temp(0);
   BigNumber remainder(true, lhs.data);
   BigNumber divisor(true, rhs.data);
-  BigNumber quotient(0);
 
   if (BigNumber::abs_compare(lhs, rhs)==EQUAL) {
     return BigNumber(0);
@@ -286,23 +256,20 @@ const BigNumber operator%(const BigNumber& lhs, const BigNumber& rhs) {
     return lhs;
   }
   while (remainder >= divisor) {
-    while(temp < divisor) {
+    temp.data.assign(remainder.data.end() - divisor.data.size(), remainder.data.end());
+    remainder.data.erase(remainder.data.end() - divisor.data.size(), remainder.data.end());
+    if (temp < divisor){
       temp.data.insert(temp.data.begin(), remainder.data.back());
       remainder.data.pop_back();
     }
+
     BigNumber::discard_leading_zero(temp.data);
 
-    int8_t count = 0;
     while (temp >= divisor) {
-      count ++;
       temp = temp - divisor;
     }
-
-    quotient.data.insert(quotient.data.begin(), count);
-    while(temp.data.size()!=0) {
-      remainder.data.push_back(temp.data.front());
-      temp.data.erase(temp.data.begin());
-    }
+    remainder.data.insert(remainder.data.end(), temp.data.begin(), temp.data.end());
+    temp.data.clear();
   }
   BigNumber::discard_leading_zero(remainder.data);
   remainder.sgn = lhs.sgn;

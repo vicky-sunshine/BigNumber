@@ -1,13 +1,13 @@
 #include "BigNumber.hpp"
 // below is for using google unit test for C++
-// #include "gtest/gtest.h"
+#include "gtest/gtest.h"
 // This is my own test srcipt
-// #include "BigNumber_spec.h"
+#include "BigNumber_spec.h"
 
 int main(int argc, char** argv){
   // Below is my own unit test function
-  // testing::InitGoogleTest(&argc, argv);
-  // RUN_ALL_TESTS();
+  testing::InitGoogleTest(&argc, argv);
+  RUN_ALL_TESTS();
 
   /* Below is showing how to do initialization
   // pass by hex string

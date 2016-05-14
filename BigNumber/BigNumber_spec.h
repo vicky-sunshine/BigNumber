@@ -3,7 +3,7 @@
 #include <iostream>
 #include <ctime>
 
-#define RND_CASE 10
+#define RND_CASE 1000
 #define RND_MAX 32768 // pow(2, 29)
 #define RND_MIN -32768
 
@@ -148,6 +148,9 @@ TEST(ArithmeticOperation, Div) {
   EXPECT_EQ(BigNumber("f1245ab3341ff3461818881767676819ee")
             /BigNumber("ffa24387539639853800bbecbcb494990"),
             BigNumber("f"));
+  EXPECT_EQ(BigNumber(6100)
+            /BigNumber(305),6100/305);
+
 }
 TEST(ArithmeticOperation, DivRandom) {
   int lhs, rhs;
@@ -163,7 +166,7 @@ TEST(ArithmeticOperation, Mod) {
   EXPECT_EQ(BigNumber("f1245ab3341ff3461818881767676819ee")
             %BigNumber("ffa24387539639853800bbecbcb494990"),
             BigNumber("17c3b6455c31d593397d7e9767e1cca7e"));
-  EXPECT_EQ(BigNumber(7) % BigNumber(2), 7 % 2);
+  EXPECT_EQ(BigNumber(7000) % BigNumber(35), 7000 % 35);
 
 }
  TEST(ArithmeticOperation, ModRandom) {
